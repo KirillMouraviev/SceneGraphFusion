@@ -40,9 +40,6 @@ RUN apt-get update && apt-get install -y \
 ENV VIRTUAL_ENV=venv
 RUN python3.8 -m venv /opt/$VIRTUAL_ENV
 ENV PATH /opt/$VIRTUAL_ENV/bin:$PATH
-# ENV LD_LIBRARY_PATH /usr/local/nvidia/lib64:${LD_LIBRARY_PATH}
-
-
 
 WORKDIR /home/workdir
 COPY . .
@@ -51,15 +48,24 @@ COPY . .
 RUN pip install torch==1.8.1+cu102 -f https://download.pytorch.org/whl/torch_stable.html open3d tensorboard trimesh cmake Cython
 RUN pip install torch_scatter torch_sparse torch_cluster torch_spline_conv -f https://data.pyg.org/whl/torch-1.8.1+cu102.html 
 
-
 #data part
 #####################################
-# RUN git clone git@github.com:WaldJohannaU/3RScan.git;
-# cd 3RSan
-# bash setup.sh
+RUN git clone https://github.com/WaldJohannaU/3RScan.git
+RUN cd 3RSan; bash setup.sh; cd ..
+
+RUN git clone https://github.com/ShunChengWu/3DSSG.git
+RUN cd 3DSSG/files; bash preparation.sh; cd ../..
+
+####onnx part
+# RUN git clone https://github.com/microsoft/onnxruntime 
+# RUN cd onnxruntime ./build.sh --config RelWithDebInfo --build_shared_lib --parallel
+# RUN cd build/Linux/RelWithDebInfo; make install; cd ../..
 
 #build part
 #####################################
-
-RUN chmod +x files/preparation.sh
-# ENTRYPOINT [ "cd ./files; bash preparation.sh" ]
+# RUN cd SceneGraphFusion; \
+#     git submodule update --init; \
+#     mkdir build; \
+#     cd build; \
+#     cmake ..; \
+#     make
