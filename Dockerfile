@@ -57,9 +57,9 @@ RUN git clone https://github.com/ShunChengWu/3DSSG.git
 RUN cd 3DSSG/files; bash preparation.sh; cd ../..
 
 ####onnx part
-# RUN git clone --branch v1.8.2 https://github.com/microsoft/onnxruntime 
-# RUN cd onnxruntime; ./build.sh --config RelWithDebInfo --build_shared_lib --parallel
-# RUN cd build/Linux/RelWithDebInfo; make install; cd ../..
+RUN git clone --recursive --branch v1.8.2 https://github.com/microsoft/onnxruntime 
+RUN cd onnxruntime; ./build.sh --config RelWithDebInfo --build_shared_lib --parallel
+RUN cd build/Linux/RelWithDebInfo; make install; cd ../../../..
 
 #build part
 #####################################
