@@ -1,4 +1,8 @@
 FROM nvidia/cuda:10.2-cudnn7-devel-ubuntu18.04
+
+ARG ssh_prv_key
+ARG ssh_pub_key
+
 ENV NVIDIA_VISIBLE_DEVICES=all
 ENV NVIDIA_DRIVER_CAPABILITIES=all
 ENV LANG C.UTF-8
@@ -10,6 +14,7 @@ RUN apt-get update -q \
     && DEBIAN_FRONTEND=noninteractive apt-get install -y \
     software-properties-common \
     build-essential \
+    openssh-server openssh-client\
     ffmpeg \
     libassimp-dev \
     freeglut3-dev \
@@ -18,6 +23,7 @@ RUN apt-get update -q \
     g++ \
     htop \
     curl \
+    locales \
     git \
     tar \
     python3-pip \
@@ -30,6 +36,10 @@ RUN apt-get update -q \
     wget \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
+    
+RUN locale-gen en_US.UTF-8
+RUN --mount=type=ssh mkdir -p -m 0600 ~/.ssh && \
+                     ssh-keyscan github.com >> ~/.ssh/known_hosts
 
 ENV LD_LIBRARY_PATH /usr/local/nvidia/lib64:${LD_LIBRARY_PATH}
 RUN add-apt-repository ppa:deadsnakes/ppa
@@ -45,27 +55,30 @@ WORKDIR /home/workdir
 COPY . .
 #network part
 #####################################
-RUN pip install torch==1.8.1+cu102 -f https://download.pytorch.org/whl/torch_stable.html open3d tensorboard trimesh cmake Cython
-RUN pip install torch_scatter torch_sparse torch_cluster torch_spline_conv -f https://data.pyg.org/whl/torch-1.8.1+cu102.html 
+# RUN pip install torch==1.8.1+cu102 -f https://download.pytorch.org/whl/torch_stable.html open3d tensorboard trimesh cmake Cython
+# RUN pip install torch_scatter torch_sparse torch_cluster torch_spline_conv -f https://data.pyg.org/whl/torch-1.8.1+cu102.html 
 
 #data part
 #####################################
-RUN git clone https://github.com/WaldJohannaU/3RScan.git
-RUN cd 3RSan; bash setup.sh; cd ..
+# RUN git clone https://github.com/WaldJohannaU/3RScan.git
+# RUN cd 3RSan; bash setup.sh; cd ..
 
-RUN git clone https://github.com/ShunChengWu/3DSSG.git
-RUN cd 3DSSG/files; bash preparation.sh; cd ../..
+# RUN git clone https://github.com/ShunChengWu/3DSSG.git
+# RUN cd 3DSSG/files; bash preparation.sh; cd ../..
 
 ####onnx part
-RUN git clone --recursive --branch v1.8.2 https://github.com/microsoft/onnxruntime 
-RUN cd onnxruntime; ./build.sh --config RelWithDebInfo --build_shared_lib --parallel
-RUN cd build/Linux/RelWithDebInfo; make install; cd ../../../..
+# RUN git clone --recursive --branch v1.8.2 https://github.com/microsoft/onnxruntime 
+# RUN cd onnxruntime; ./build.sh --config RelWithDebInfo --build_shared_lib --parallel
+# RUN cd build/Linux/RelWithDebInfo; make install; cd ../../../..
+
 
 #build part
 #####################################
-# RUN cd SceneGraphFusion; \
-#     git submodule update --init; \
-#     mkdir build; \
-#     cd build; \
-#     cmake ..; \
-#     make
+RUN --mount=type=ssh cd SceneGraphFusion; \
+    git  submodule init; \
+    git submodule update --init --recursive; \
+    mkdir build; \
+    cd build; \
+    cmake ..; \
+    make
+RUN rm -rf /root/.ssh/
