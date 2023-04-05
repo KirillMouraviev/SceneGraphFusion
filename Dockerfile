@@ -32,6 +32,7 @@ RUN apt-get update -q \
     net-tools \
     nano \
     unzip \
+    libjsoncpp-dev \
     vim \
     wget \
     libmygui-dev \
@@ -57,7 +58,7 @@ WORKDIR /home/workdir
 COPY . .
 #network part
 #####################################
-# RUN pip install torch==1.8.1+cu102 -f https://download.pytorch.org/whl/torch_stable.html open3d tensorboard trimesh cmake Cython
+# RUN pip install torch==1.8.1+cu102 -f https://download.pytorch.org/whl/torch_stable.html numpy open3d tensorboard trimesh cmake Cython
 # RUN pip install torch_scatter torch_sparse torch_cluster torch_spline_conv -f https://data.pyg.org/whl/torch-1.8.1+cu102.html 
 
 #data part
@@ -76,11 +77,12 @@ COPY . .
 
 #build part
 #####################################
+# RUN ln -s /usr/include/eigen3/Eigen /usr/include/Eigen
 RUN --mount=type=ssh cd SceneGraphFusion; \
     git  submodule init && \
-    git submodule update --remote &&\
+    git submodule update --recursive &&\
     mkdir build && \
     cd build && \
-    cmake .. && \
+    cmake -DBUILD_GUI=ON -DENABLE_PRECOMPILED_HEADERS=OFF .. && \
     make
 RUN rm -rf /root/.ssh/
