@@ -34,10 +34,11 @@ RUN apt-get update -q \
     unzip \
     vim \
     wget \
+    libmygui-dev \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 
-RUN wget -qO- "https://cmake.org/files/v3.13/cmake-3.13.1-Linux-x86_64.tar.gz" | tar --strip-components=1 -xz -C /usr/local
+RUN wget -qO- "https://cmake.org/files/v3.14/cmake-3.14.1-Linux-x86_64.tar.gz" | tar --strip-components=1 -xz -C /usr/local
 RUN locale-gen en_US.UTF-8
 RUN --mount=type=ssh mkdir -p -m 0600 ~/.ssh && \
                      ssh-keyscan github.com >> ~/.ssh/known_hosts
@@ -76,10 +77,10 @@ COPY . .
 #build part
 #####################################
 RUN --mount=type=ssh cd SceneGraphFusion; \
-    git  submodule init; \
-    git submodule update --init --recursive; \
-    mkdir build; \
-    cd build; \
-    cmake ../; \
+    git  submodule init && \
+    git submodule update --remote &&\
+    mkdir build && \
+    cd build && \
+    cmake .. && \
     make
 RUN rm -rf /root/.ssh/
