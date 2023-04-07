@@ -32,10 +32,9 @@ RUN apt-get update -q \
     net-tools \
     nano \
     unzip \
-    libjsoncpp-dev \
     vim \
     wget \
-    libmygui-dev \
+    libeigen3-dev \ 
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 
@@ -58,31 +57,31 @@ WORKDIR /home/workdir
 COPY . .
 #network part
 #####################################
-# RUN pip install torch==1.8.1+cu102 -f https://download.pytorch.org/whl/torch_stable.html numpy open3d tensorboard trimesh cmake Cython
-# RUN pip install torch_scatter torch_sparse torch_cluster torch_spline_conv -f https://data.pyg.org/whl/torch-1.8.1+cu102.html 
+RUN pip install torch==1.8.1+cu102 -f https://download.pytorch.org/whl/torch_stable.html numpy open3d tensorboard trimesh cmake Cython
+RUN pip install torch_scatter torch_sparse torch_cluster torch_spline_conv -f https://data.pyg.org/whl/torch-1.8.1+cu102.html 
 
 #data part
 #####################################
 # RUN git clone https://github.com/WaldJohannaU/3RScan.git
 # RUN cd 3RSan; bash setup.sh; cd ..
 
-# RUN git clone https://github.com/ShunChengWu/3DSSG.git
-# RUN cd 3DSSG/files; bash preparation.sh; cd ../..
+RUN git clone https://github.com/ShunChengWu/3DSSG.git
+RUN cd 3DSSG/files; bash preparation.sh; cd ../..
 
 ####onnx part
-# RUN git clone --recursive --branch v1.8.2 https://github.com/microsoft/onnxruntime 
-# RUN cd onnxruntime; ./build.sh --config RelWithDebInfo --build_shared_lib --parallel
-# RUN cd build/Linux/RelWithDebInfo; make install; cd ../../../..
+RUN git clone --recursive --branch v1.8.2 https://github.com/microsoft/onnxruntime 
+RUN cd onnxruntime; ./build.sh --config RelWithDebInfo --build_shared_lib --parallel
+RUN cd build/Linux/RelWithDebInfo; make install; cd ../../../..
 
 
 #build part
 #####################################
-# RUN ln -s /usr/include/eigen3/Eigen /usr/include/Eigen
+RUN ln -s /usr/include/eigen3/Eigen /usr/include/Eigen
 RUN --mount=type=ssh cd SceneGraphFusion; \
     git  submodule init && \
-    git submodule update --recursive &&\
+    git submodule update &&\
     mkdir build && \
     cd build && \
-    cmake -DBUILD_GUI=ON -DENABLE_PRECOMPILED_HEADERS=OFF .. && \
+    cmake -DBUILD_GUI=ON -DBUILD_GRAPHPRED=ON .. && \
     make
 RUN rm -rf /root/.ssh/
