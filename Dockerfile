@@ -35,7 +35,7 @@ RUN apt-get update -q \
     unzip \
     vim \
     wget \
-    xfvb \
+    xvfb \
     libeigen3-dev \ 
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
