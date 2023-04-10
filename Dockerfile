@@ -35,6 +35,7 @@ RUN apt-get update -q \
     unzip \
     vim \
     wget \
+    xfvb \
     libeigen3-dev \ 
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
@@ -58,8 +59,8 @@ WORKDIR /home/workdir
 COPY . .
 #network part
 #####################################
-#RUN pip install torch==1.8.1+cu102 -f https://download.pytorch.org/whl/torch_stable.html numpy open3d tensorboard trimesh cmake Cython
-#RUN pip install torch_scatter torch_sparse torch_cluster torch_spline_conv -f https://data.pyg.org/whl/torch-1.8.1+cu102.html 
+RUN pip install torch==1.8.1+cu102 -f https://download.pytorch.org/whl/torch_stable.html gdown numpy open3d tensorboard trimesh cmake Cython
+RUN pip install torch_scatter torch_sparse torch_cluster torch_spline_conv -f https://data.pyg.org/whl/torch-1.8.1+cu102.html 
 
 #data part
 #####################################
@@ -72,8 +73,8 @@ RUN cd 3DSSG/files; bash preparation.sh; cd ../..
 ####onnx part
 RUN git clone --recursive --branch v1.8.2 https://github.com/microsoft/onnxruntime 
 RUN cd onnxruntime && ./build.sh --config RelWithDebInfo --build_shared_lib --parallel && \
-    cd onnxruntime/build/Linux/RelWithDebInfo && make install && cd ../../../ && \
-    python setup.py bdist_wheel && pip install --upgrade dist/*.whl && cd ../
+    cd onnxruntime/build/Linux/RelWithDebInfo && make install && cd ../../../..
+    # python setup.py bdist_wheel && pip install --upgrade dist/*.whl && cd ../
 
 
 #build part

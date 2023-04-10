@@ -37,9 +37,12 @@ SET(WITH_OPENCV TRUE)
 SET(WITH_EIGEN TRUE)
 SET(WITH_TINYPLY TRUE)
 SET(WITH_JSON TRUE)
+
+
 INCLUDE(Usetinyply)
 INCLUDE(UseJson)
 INCLUDE(UseOpenMP)
+
 if(APPLE)
 	set(INSEG_LIB ${PROJECT_SOURCE_DIR}/lib/libInSegLib_osx.a)
 else()
@@ -49,6 +52,7 @@ endif()
 # Include dirs #
 ################
 INCLUDE_DIRECTORIES(ORUtils/include)
+# INCLUDE_DIRECTORIES( ${EIGEN3_INCLUDE_DIR} )
 ######################
 # Add subdirectories #
 ######################

@@ -19,3 +19,12 @@ fi
 if [[ ! -f "data/3RScan/objects.json" ]]; then
 	wget "http://www.campar.in.tum.de/public_datasets/3DSSG/3DSSG/objects.json" -P data/3RScan
 fi
+
+
+if [[ ! -d "pretrained_model" ]]; then
+	mkdir pretrained_model;
+	cd pretrained_model;
+	gdown 1_745ofaOUyP_iFK8A3cSW60L4V7TlWa7;
+	unzip CVPR21_traced.zip; rm CVPR21_traced.zip;
+	cd ..
+fi
