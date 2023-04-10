@@ -73,7 +73,7 @@ RUN cd 3DSSG/files; bash preparation.sh; cd ../..
 ####onnx part
 RUN git clone --recursive --branch v1.8.2 https://github.com/microsoft/onnxruntime 
 RUN cd onnxruntime && ./build.sh --config RelWithDebInfo --build_shared_lib --parallel && \
-    cd onnxruntime/build/Linux/RelWithDebInfo && make install && cd ../../../..
+    cd build/Linux/RelWithDebInfo && make install && cd ../../../..
     # python setup.py bdist_wheel && pip install --upgrade dist/*.whl && cd ../
 
 
