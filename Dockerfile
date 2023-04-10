@@ -6,6 +6,7 @@ ARG ssh_pub_key
 ENV NVIDIA_VISIBLE_DEVICES=all
 ENV NVIDIA_DRIVER_CAPABILITIES=all
 ENV LANG C.UTF-8
+ENV ONNX_ML=1  
 
 RUN apt-key adv --fetch-keys https://developer.download.nvidia.com/compute/cuda/repos/ubuntu1804/x86_64/3bf863cc.pub 
 RUN apt-key adv --fetch-keys https://developer.download.nvidia.com/compute/machine-learning/repos/ubuntu1804/x86_64/7fa2af80.pub
@@ -70,14 +71,15 @@ RUN cd 3DSSG/files; bash preparation.sh; cd ../..
 
 ####onnx part
 RUN git clone --recursive --branch v1.8.2 https://github.com/microsoft/onnxruntime 
-RUN cd onnxruntime; ./build.sh --config RelWithDebInfo --build_shared_lib --parallel
-RUN cd build/Linux/RelWithDebInfo && make install && cd ../../../ && \
-    export ONNX_ML=1 && python setup.py bdist_wheel && pip install --upgrade dist/*.whl && cd ../
+RUN cd onnxruntime && ./build.sh --config RelWithDebInfo --build_shared_lib --parallel && \
+    cd onnxruntime/build/Linux/RelWithDebInfo && make install && cd ../../../ && \
+    python setup.py bdist_wheel && pip install --upgrade dist/*.whl && cd ../
 
 
 #build part
 #####################################
 RUN ln -s /usr/include/eigen3/Eigen /usr/include/Eigen
+RUN ln -s /usr/local/include/onnxruntime/core/session/* /usr/local/include/
 RUN --mount=type=ssh cd SceneGraphFusion; \
     git  submodule init && \
     git submodule update &&\
