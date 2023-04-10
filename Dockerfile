@@ -57,8 +57,8 @@ WORKDIR /home/workdir
 COPY . .
 #network part
 #####################################
-RUN pip install torch==1.8.1+cu102 -f https://download.pytorch.org/whl/torch_stable.html numpy open3d tensorboard trimesh cmake Cython
-RUN pip install torch_scatter torch_sparse torch_cluster torch_spline_conv -f https://data.pyg.org/whl/torch-1.8.1+cu102.html 
+#RUN pip install torch==1.8.1+cu102 -f https://download.pytorch.org/whl/torch_stable.html numpy open3d tensorboard trimesh cmake Cython
+#RUN pip install torch_scatter torch_sparse torch_cluster torch_spline_conv -f https://data.pyg.org/whl/torch-1.8.1+cu102.html 
 
 #data part
 #####################################
@@ -71,7 +71,8 @@ RUN cd 3DSSG/files; bash preparation.sh; cd ../..
 ####onnx part
 RUN git clone --recursive --branch v1.8.2 https://github.com/microsoft/onnxruntime 
 RUN cd onnxruntime; ./build.sh --config RelWithDebInfo --build_shared_lib --parallel
-RUN cd build/Linux/RelWithDebInfo; make install; cd ../../../..
+RUN cd build/Linux/RelWithDebInfo && make install && cd ../../../ && \
+    export ONNX_ML=1 && python setup.py bdist_wheel && pip install --upgrade dist/*.whl && cd ../
 
 
 #build part
